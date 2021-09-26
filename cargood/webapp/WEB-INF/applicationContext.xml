@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+        xmlns:aop="http://www.springframework.org/schema/aop"
+
+        xmlns="http://www.springframework.org/schema/beans"
+
+        xmlns:p="http://www.springframework.org/schema/p"
+
+        xmlns:context="http://www.springframework.org/schema/context"
+
+        xmlns:mvc="http://www.springframework.org/schema/mvc"
+
+        xsi:schemaLocation="http://www.springframework.org/schema/mvc
+
+http://www.springframework.org/schema/mvc/spring-mvc.xsd    http://www.springframework.org/schema/aop
+
+http://www.springframework.org/schema/aop/spring-aop.xsd    http://www.springframework.org/schema/beans
+
+http://www.springframework.org/schema/beans/spring-beans.xsd    http://www.springframework.org/schema/context
+
+http://www.springframework.org/schema/context/spring-context.xsd">
+
+<context:annotation-config />
+<context:component-scan base-package="com.cargood.cargoodController,com.cargood.cargoodDAO,com.cargood.cargoodService,com.cargood.cargoodVO">
+	<context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+	<context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+	<context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
+</context:component-scan>
+	
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+			destroy-method="close" autowire="byName">
+			<property name="driverClass" value="oracle.jdbc.driver.OracleDriver"/>
+			<property name="jdbcUrl" value="jdbc:oracle:thin:@Localhost:49161:xe"/>
+			<property name="user" value="jdbctest"/>
+			<property name="password" value="1111"/>
+			<property name="maxPoolSize" value="100"/>
+			<property name="maxIdleTime" value="600"/>
+			<property name="idleConnectionTestPeriod" value="300"/>
+	</bean>
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" autowire="byName">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="configLocation" value="classpath:mybatis-config.xml"/>
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:sqlmap-class.xml</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache" autowire="byName">
+		<constructor-arg ref="sqlSessionFactory"/>
+	</bean>
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+
+</beans>
